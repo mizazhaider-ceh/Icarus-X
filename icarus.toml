@@ -1,0 +1,52 @@
+# ICARUS-X Configuration File
+# Edit these settings to customize the framework behavior
+
+[general]
+version = "1.0.0"
+debug = false
+artifacts_dir = "./artifacts"
+database_path = "./icarus.db"
+
+[scanner]
+# Port scanning settings
+default_ports = "top-1000"
+port_timeout = 2.0
+max_concurrent_ports = 500
+
+# Subdomain enumeration
+subdomain_timeout = 3.0
+max_concurrent_dns = 200
+default_wordlist = "subdomains-top1mil-5000.txt"
+
+# HTTP probing
+http_timeout = 5.0
+max_concurrent_http = 100
+follow_redirects = true
+verify_ssl = false
+
+[workflow]
+# Default workflow to run
+default_workflow = "full"
+# Phases: recon, vuln_scan, exploit, post_exploit, report
+enabled_phases = ["recon", "vuln_scan", "report"]
+
+[ai]
+# AI provider: "gemini", "anthropic", "openai"
+provider = "gemini"
+model = "gemini-1.5-flash"
+max_tokens = 4096
+temperature = 0.7
+
+# API key (set via environment variable ICARUS_AI_API_KEY)
+api_key_env = "ICARUS_AI_API_KEY"
+
+[reporting]
+# Output formats: html, markdown, json
+default_format = "html"
+template_dir = "./templates"
+include_evidence = true
+
+[logging]
+level = "INFO"
+log_dir = "./logs"
+format = "rich"  # rich, json, plain

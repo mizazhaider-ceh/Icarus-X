@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Reports (generated)
+reports/
+*.html
+!templates/*.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets - NEVER COMMIT
+*.pem
+*.key
+.env.local
+.env.*.local
+secrets/
+credentials/
+
+# ICARUS-X specific
+runs/
+output/
+scans/
+.icarus-x/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
