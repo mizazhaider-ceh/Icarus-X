@@ -1031,36 +1031,48 @@ def ai(
             
             response = asyncio.run(ai_engine.suggest_commands(goal, context))
             
-            # Render with clean formatting
-            console.print("\n" + "="*80)
-            console.print("[bold cyan]🎯 Suggested Commands[/bold cyan]")
-            console.print("="*80 + "\n")
-            console.print(Markdown(response))
-            console.print("\n" + "="*80 + "\n")
+            # Render with beautiful Panel
+            console.print()
+            console.print(Panel(
+                Markdown(response),
+                title="[bold white]🎯 ATTACK COMMANDS[/bold white]",
+                subtitle=f"[dim]Model: {config.ai.model} | Goal: {goal[:40]}...[/dim]" if len(goal) > 40 else f"[dim]Model: {config.ai.model} | Goal: {goal}[/dim]",
+                border_style="cyan",
+                padding=(1, 2),
+            ))
+            console.print()
             
         elif explain:
             console.print(f"[dim]Explaining: {explain}[/dim]\n")
             dashboard_log("info", f"AI explaining: {explain}")
             response = asyncio.run(ai_engine.explain(explain))
             
-            # Render with clean formatting
-            console.print("\n" + "="*80)
-            console.print("[bold green]📖 Explanation[/bold green]")
-            console.print("="*80 + "\n")
-            console.print(Markdown(response))
-            console.print("\n" + "="*80 + "\n")
+            # Render with beautiful Panel
+            console.print()
+            console.print(Panel(
+                Markdown(response),
+                title=f"[bold white]📖 {explain.upper()}[/bold white]",
+                subtitle=f"[dim]Powered by Cerebras {config.ai.model}[/dim]",
+                border_style="green",
+                padding=(1, 2),
+            ))
+            console.print()
             
         elif query:
             console.print(f"[dim]Query: {query}[/dim]\n")
             dashboard_log("info", f"AI query: {query}")
             response = asyncio.run(ai_engine.ask(query))
             
-            # Render with clean formatting
-            console.print("\n" + "="*80)
-            console.print("[bold magenta]🤖 AI Response[/bold magenta]")
-            console.print("="*80 + "\n")
-            console.print(Markdown(response))
-            console.print("\n" + "="*80 + "\n")
+            # Render with beautiful Panel
+            console.print()
+            console.print(Panel(
+                Markdown(response),
+                title="[bold white]🤖 AI RESPONSE[/bold white]",
+                subtitle=f"[dim]Model: {config.ai.model}[/dim]",
+                border_style="magenta",
+                padding=(1, 2),
+            ))
+            console.print()
             
         else:
             console.print("[yellow]Please provide --query, --commands, or --explain[/yellow]")

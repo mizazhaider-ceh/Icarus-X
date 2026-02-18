@@ -79,13 +79,17 @@ class AIEngine:
         await self._ensure_initialized()
         
         prompt = f"""You are ICARUS-X, an AI assistant specialized in penetration testing and cybersecurity.
-        
-Answer the following question concisely and accurately:
 
-{query}
+Question: {query}
 
-Provide practical, actionable information. If the question relates to hacking or security testing, 
-assume it's for authorized penetration testing purposes."""
+Provide a clear, well-structured response using markdown:
+- Use **bold** for important terms
+- Use `code` for commands, tools, or technical terms
+- Use numbered lists for steps
+- Use bullet points for options/alternatives
+- Use code blocks with ```bash for command examples
+
+Be practical and actionable. Assume authorized penetration testing context."""
         
         return await self._generate(prompt)
     
@@ -116,13 +120,23 @@ Context from current scan:
 Goal: {goal}
 {context_str}
 
-Suggest 3-5 specific commands to achieve this goal. For each command:
-1. Show the exact command
-2. Explain what it does
-3. Explain expected output
+Suggest 3-5 specific commands to achieve this goal. Format EXACTLY like this:
 
-Format as a numbered list. Use common tools like nmap, netcat, curl, hydra, sqlmap, etc.
-Keep explanations concise but thorough."""
+### Command 1: [Brief Description]
+```bash
+[exact command here]
+```
+**What it does:** [explanation]
+
+**Expected output:** [what to expect]
+
+---
+
+### Command 2: [Brief Description]
+...
+
+Use common tools like nmap, netcat, curl, hydra, sqlmap, gobuster, nikto, etc.
+Keep explanations concise. Always use code blocks for commands."""
         
         return await self._generate(prompt)
     
@@ -140,16 +154,29 @@ Keep explanations concise but thorough."""
         
         prompt = f"""You are ICARUS-X, an AI cybersecurity expert.
 
-Explain the following in detail: {topic}
+Explain: **{topic}**
 
-Structure your response:
-1. **Overview**: What is it?
-2. **Impact**: What's the security impact?
-3. **Affected Systems**: What systems/versions are vulnerable?
-4. **Detection**: How can it be detected?
-5. **Remediation**: How to fix or mitigate?
+Structure your response with these exact headers:
 
-Be accurate and technical but accessible."""
+## Overview
+[What is it? Brief explanation]
+
+## Impact
+[Security impact - what can attackers do?]
+
+## Affected Systems
+[List vulnerable systems/versions with bullet points]
+
+## Detection
+[How to detect - include specific commands if applicable]
+```bash
+# detection command example
+```
+
+## Remediation
+[How to fix - prioritized steps]
+
+Be accurate, technical, and include relevant command examples where helpful."""
         
         return await self._generate(prompt)
     
