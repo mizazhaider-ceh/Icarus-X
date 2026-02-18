@@ -2,6 +2,7 @@
 ICARUS-X AI Engine
 ==================
 AI-powered assistant for command suggestions, explanations, and reporting.
+Powered by Cerebras - World's fastest AI inference.
 """
 
 import asyncio
@@ -14,19 +15,20 @@ from utils.logger import get_logger
 
 class AIEngine:
     """
-    AI-powered pentesting assistant.
+    AI-powered pentesting assistant powered by Cerebras.
     
     Features:
     - Command suggestions based on context
     - CVE/vulnerability explanations
     - Finding analysis and remediation
     - Report summarization
+    - Real-time AI responses (up to 3000 tokens/s)
     """
     
     def __init__(self, config: IcarusConfig):
         self.config = config
         self.logger = get_logger()
-        self.model = None
+        self.client = None
         self._initialized = False
     
     async def _ensure_initialized(self):
@@ -37,20 +39,32 @@ class AIEngine:
         api_key = self.config.ai.api_key
         if not api_key:
             raise ValueError(
-                "AI API key not configured. Set ICARUS_AI_API_KEY or GEMINI_API_KEY environment variable."
+                "AI API key not configured. Set ICARUS_AI_API_KEY or CEREBRAS_API_KEY environment variable.\n"
+                "Get free API key from: https://inference.cerebras.ai/"
             )
         
         provider = self.config.ai.provider
         
-        if provider == "gemini":
-            import google.generativeai as genai
-            genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel(self.config.ai.model)
+        if provider == "cerebras":
+            from cerebras.cloud.sdk import Cerebras
+            self.client = Cerebras(api_key=api_key)
+            
+            # Validate model
+            if self.config.ai.model not in self.config.ai.available_models:
+                self.logger.warning(
+                    f"Unknown model: {self.config.ai.model}. Using default: llama3.1-8b"
+                )
+                self.config.ai.model = "llama3.1-8b"
+            
+            model_info = self.config.ai.available_models[self.config.ai.model]
+            self.logger.info(
+                f"AI engine initialized with Cerebras {self.config.ai.model} "
+                f"({model_info['params']}, {model_info['speed']})"
+            )
         else:
-            raise ValueError(f"Unsupported AI provider: {provider}")
+            raise ValueError(f"Unsupported AI provider: {provider}. Use 'cerebras'.")
         
         self._initialized = True
-        self.logger.info(f"AI engine initialized with provider: {provider}")
     
     async def ask(self, query: str) -> str:
         """
@@ -201,19 +215,29 @@ Write for a non-technical audience (executives, managers)."""
         return await self._generate(prompt)
     
     async def _generate(self, prompt: str) -> str:
-        """Generate response from AI model."""
+        """Generate response from AI model using Cerebras."""
         try:
-            if self.config.ai.provider == "gemini":
+            if self.config.ai.provider == "cerebras":
                 response = await asyncio.to_thread(
-                    self.model.generate_content,
-                    prompt,
-                    generation_config={
-                        "max_output_tokens": self.config.ai.max_tokens,
-                        "temperature": self.config.ai.temperature,
-                    }
+                    self.client.chat.completions.create,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": prompt,
+                        }
+                    ],
+                    model=self.config.ai.model,
+                    max_tokens=self.config.ai.max_tokens,
+                    temperature=self.config.ai.temperature,
                 )
-                return response.text
+                return response.choices[0].message.content
+            else:
+                raise ValueError(f"Unsupported provider: {self.config.ai.provider}")
             
         except Exception as e:
             self.logger.error(f"AI generation failed: {e}")
-            return f"AI generation failed: {str(e)}\n\nPlease check your API key and try again."
+            return (
+                f"AI generation failed: {str(e)}\n\n"
+                f"Please check your CEREBRAS_API_KEY and try again.\n"
+                f"Get free API key from: https://inference.cerebras.ai/"
+            )

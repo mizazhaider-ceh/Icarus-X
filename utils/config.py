@@ -39,16 +39,25 @@ class WorkflowConfig(BaseModel):
 
 class AIConfig(BaseModel):
     """AI configuration."""
-    provider: str = "gemini"
-    model: str = "gemini-1.5-flash"
+    provider: str = "cerebras"
+    model: str = "llama3.1-8b"
     max_tokens: int = 4096
     temperature: float = 0.7
     api_key_env: str = "ICARUS_AI_API_KEY"
     
+    # Available Cerebras models with their specs
+    available_models: dict = {
+        "llama3.1-8b": {"params": "8B", "speed": "~2200 tok/s", "type": "production"},
+        "llama-3.3-70b": {"params": "70B", "speed": "~450 tok/s", "type": "production"},
+        "gpt-oss-120b": {"params": "120B", "speed": "~3000 tok/s", "type": "production"},
+        "qwen-3-235b-a22b-instruct-2507": {"params": "235B", "speed": "~1400 tok/s", "type": "preview"},
+        "zai-glm-4.7": {"params": "355B", "speed": "~1000 tok/s", "type": "preview"},
+    }
+    
     @property
     def api_key(self) -> Optional[str]:
         """Get API key from environment."""
-        return os.environ.get(self.api_key_env) or os.environ.get("GEMINI_API_KEY")
+        return os.environ.get(self.api_key_env) or os.environ.get("CEREBRAS_API_KEY")
 
 
 class ReportingConfig(BaseModel):

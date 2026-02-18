@@ -1,4 +1,8 @@
-# ICARUS-X: Unified AI-Powered Pentesting Framework
+<div align="center">
+
+# ✈️ ICARUS-X
+
+### Unified AI-Powered Penetration Testing Framework
 
 ```
  ___ ____    _    ____  _   _ ____        __  __
@@ -8,96 +12,206 @@
 |___|\\____/_/   \_\_| \_\\___/|____/      /_/\_\
 ```
 
-**One CLI. Multiple Modes. Blazing Fast.**
+**One CLI • Multiple Modes • Blazing Fast Async Operations**
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Maintained](https://img.shields.io/badge/Maintained-Yes-brightgreen.svg?style=for-the-badge)](https://github.com/yourusername/Icarus-X)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20WSL2-lightgrey.svg?style=for-the-badge)](https://github.com/yourusername/Icarus-X)
+
+[Features](#-features) • [Installation](#-quick-start) • [Usage](#-usage) • [Documentation](#-documentation) • [Contributing](#-contributing)
+
+</div>
+
+---
+
+## � About
+
+**ICARUS-X** is a modern, unified penetration testing framework designed for security professionals and ethical hackers. Built with Python 3.11+ and leveraging async/await patterns, it delivers exceptional performance in reconnaissance, vulnerability scanning, and attack surface enumeration.
+
+### 🎯 Why ICARUS-X?
+
+- **🚀 Blazing Fast:** Async operations with 500+ concurrent connections
+- **🤖 AI-Powered:** Integrated AI assistant for command suggestions and CVE explanations
+- **🔧 Unified Interface:** 13+ modules in a single, intuitive CLI
+- **📊 Professional Reports:** HTML/Markdown/JSON report generation
+- **🔐 Security-First:** No hardcoded credentials, environment-based configuration
+- **🎨 Modern UI:** Rich terminal interface with live progress tracking
+
+---
+
+## ✨ Features
+
+### Core Capabilities
+
+| Module | Description | Key Features |
+|--------|-------------|--------------|
+| 🔍 **Scout** | High-speed reconnaissance | Async port scanning, subdomain enumeration, HTTP probing |
+| 🕷️ **Spider** | Web application crawler | Recursive crawling, JS parsing, form detection |
+| 🎯 **DirBrute** | Directory brute-forcing | ffuf/gobuster integration, multi-wordlist support |
+| 🔬 **Vuln** | Vulnerability scanning | Nuclei CVE detection, template-based scanning |
+| 🔧 **Tech** | Technology detection | Wappalyzer integration, framework fingerprinting |
+| 💉 **Payloads** | Attack payload generation | XSS, SQLi, shells, command injection, LFI |
+| 🌐 **NetMap** | Network discovery | Host enumeration, service detection, CIDR support |
+| 🤖 **AI** | AI-powered assistant | Command suggestions, CVE explanations, contextual help |
+| 📊 **Report** | Professional reporting | HTML/Markdown/JSON formats, templated output |
+
+### Advanced Features
+
+- **Async Architecture:** 500+ concurrent port scans, 200+ concurrent DNS queries
+- **Mass Target Support:** CIDR ranges, IP ranges, target lists from files
+- **Wordlist Manager:** Browse 100+ categorized wordlists with intelligent search
+- **Tool Checker:** Automatic detection and installation guidance for 14+ tools
+- **Database Persistence:** SQLite-based workflow tracking and resumption
+- **Modular Design:** Clean separation of concerns, easy to extend
 
 ---
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Python 3.11+
+- Linux (Kali/Ubuntu/Debian), macOS, or Windows with WSL2
+
+### Installation
+
 ```bash
-cd icarus_x
+# Clone repository
+git clone https://github.com/yourusername/Icarus-X.git
+cd Icarus-X
 
-# Install dependencies
-pip3 install typer rich httpx pydantic pydantic-settings aiodns aiofiles sqlmodel aiosqlite jinja2 orjson python-whois google-generativeai
+# Install Python dependencies
+pip install -r requirements.txt
 
-# Check installed tools
-python3 icarus.py tools
+# Install external tools (Kali/Ubuntu/Debian)
+sudo apt install nmap ffuf gobuster nuclei nikto sqlmap hydra whatweb
 
-# Fast reconnaissance
-python3 icarus.py scout --target scanme.nmap.org
+# Verify installation
+python icarus.py tools
+```
 
-# Full pentest workflow
-python3 icarus.py pentest --target example.com
+**📚 Detailed Setup:** See [SETUP.md](SETUP.md) for comprehensive installation instructions.
+
+---
+
+## 💻 Usage
+
+### Basic Commands
+
+#### 🔍 Reconnaissance (Scout Mode)
+```bash
+# Fast port scan + HTTP probing
+python icarus.py scout --target example.com
+
+# Custom ports
+python icarus.py scout --target example.com --ports 22,80,443,8080
+
+# Mass scanning from file
+python icarus.py scout --targets targets.txt
+
+# Full reconnaissance with tech detection
+python icarus.py scout --target example.com --tech
+```
+
+#### 🎯 Directory Brute-forcing
+```bash
+# Basic directory scan
+python icarus.py dirbrute --target https://example.com
+
+# Custom wordlist
+python icarus.py dirbrute --target https://example.com --wordlist common.txt
+
+# Multiple extensions
+python icarus.py dirbrute --target https://example.com --extensions php,html,js
+```
+
+#### 🔬 Vulnerability Scanning
+```bash
+# Nuclei CVE scan
+python icarus.py vuln --target https://example.com
+
+# Specific severity
+python icarus.py vuln --target https://example.com --severity critical,high
+
+# Save results
+python icarus.py vuln --target https://example.com --output vulns.json
+```
+
+#### 💉 Payload Generation
+```bash
+# List all shell payloads
+python icarus.py payloads --list shells
+
+# Generate reverse shell
+python icarus.py payloads --type bash --ip 10.10.14.5 --port 4444
+
+# XSS payloads
+python icarus.py payloads --list xss
+
+# SQLi payloads
+python icarus.py payloads --list sqli
+```
+
+#### 🤖 AI Assistant (Requires API Key)
+```bash
+# Get command suggestions
+python icarus.py ai --commands --goal "enumerate SMB shares"
+
+# Explain CVE
+python icarus.py ai --explain CVE-2024-1234
+
+# General queries
+python icarus.py ai --query "how to bypass WAF?"
+```
+
+### Advanced Workflows
+
+#### Full Penetration Test
+```bash
+# Complete workflow: recon → vuln scan → report
+python icarus.py pentest --target example.com --workflow full
+
+# Quick scan (faster, less comprehensive)
+python icarus.py pentest --target example.com --workflow quick
+
+# Resume previous scan
+python icarus.py pentest --run-id abc123
+```
+
+#### Report Generation
+```bash
+# Generate HTML report
+python icarus.py report --run-id abc123 --format html
+
+# Markdown export
+python icarus.py report --run-id abc123 --format markdown
+
+# JSON for automation
+python icarus.py report --run-id abc123 --format json --output results.json
+```
+
+#### Manage Workflow Runs
+```bash
+# List recent scans
+python icarus.py runs list --limit 10
+
+# View specific run details
+python icarus.py runs show abc123
 ```
 
 ---
 
-## 📋 All Commands
+## 📊 Screenshots
 
-| Command | Description |
-|---------|-------------|
-| `tools` | Check installed pentesting tools (nmap, ffuf, nuclei, etc.) |
-| `wordlists` | Browse and find wordlists for fuzzing |
-| `scout` | High-speed async reconnaissance |
-| `spider` | Web application crawling |
-| `dirbrute` | Directory brute-forcing (ffuf/gobuster) |
-| `vuln` | Nuclei CVE vulnerability scanning |
-| `tech` | Technology detection & fingerprinting |
-| `netmap` | Network discovery & host mapping |
-| `payloads` | Generate attack payloads (XSS, SQLi, shells) |
-| `pentest` | Full workflow orchestration |
-| `ai` | AI-powered command suggestions |
-| `report` | Generate HTML/Markdown reports |
-| `runs` | Manage workflow runs |
-
----
-
-## 🔧 Tool Checker
-
-```bash
-python3 icarus.py tools
+### Tool Status Check
 ```
-
-Checks for required security tools:
-- **Network**: nmap, httpx
-- **Fuzzing**: ffuf, gobuster, feroxbuster, dirsearch
-- **Scanning**: nuclei, nikto, whatweb
-- **Exploitation**: sqlmap, hydra
-- **Discovery**: subfinder, amass
-
-Shows install commands for any missing tools.
-
----
-
-## 📚 Wordlist Manager
-
-```bash
-python3 icarus.py wordlists --scan              # Scan all wordlist folders
-python3 icarus.py wordlists --category dir      # Filter by category
-python3 icarus.py wordlists --search rockyou    # Search for wordlists
-python3 icarus.py wordlists --path common       # Get path for a wordlist
-python3 icarus.py wordlists --locations         # Show all folder locations
-```
-
-Categories:
-- Directory Bruteforce
-- Subdomain Enumeration
-- Password Attacks
-- Username Enumeration
-- Fuzzing (LFI, SQLi, XSS)
-- API Testing
-- Technology Specific (CMS paths)
-
----
-
-## 🔍 Scout Mode (Reconnaissance)
-
-```bash
-python3 icarus.py scout --target example.com
-python3 icarus.py scout --target example.com --ports 22,80,443,8080
+┏━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+┃ Tool        ┃ Status  ┃ Description              ┃ Version             ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+│ nmap        │   OK    │ Network scanner          │ Nmap version 7.94   │
+│ ffuf        │   OK    │ Fast web fuzzer          │ ffuf version 2.1.0  │
+│ nuclei      │   OK    │ Vulnerability scanner    │ v3.1.0              │
+└─────────────┴─────────┴──────────────────────────┴─────────────────────┘
 python3 icarus.py scout --target example.com --tech   # Include tech detection
 python3 icarus.py scout --targets targets.txt          # Mass target import
 ```
@@ -236,7 +350,7 @@ All results are persisted to database for resumption.
 ## 🤖 AI Assistant
 
 ```bash
-export GEMINI_API_KEY=your-key
+export CEREBRAS_API_KEY=your-key
 
 # Command suggestions
 python3 icarus.py ai --commands --goal "enumerate SMB shares"
@@ -249,7 +363,7 @@ python3 icarus.py ai --explain CVE-2024-1234
 python3 icarus.py ai --query "how to bypass WAF?"
 ```
 
-Requires Google Gemini API key (free tier available).
+Requires Cerebras API key (free tier available - world's fastest AI inference at up to 3000 tokens/s).
 
 ---
 
@@ -290,8 +404,8 @@ max_concurrent_ports = 500
 default_ports = "21,22,23,25,53,80,110,135,139,143,443,445,993,995,1723,3306,3389,5432,5900,8080,8443"
 
 [ai]
-provider = "gemini"
-model = "gemini-1.5-flash"
+provider = "cerebras"
+model = "llama3.1-8b"
 
 [report]
 template_dir = "templates"
@@ -331,7 +445,7 @@ icarus_x/
 │   ├── scanner.py      # Async reconnaissance engine
 │   ├── workflow.py     # Workflow orchestration
 │   ├── reporter.py     # Report generation
-│   └── ai_engine.py    # AI integration (Gemini)
+│   └── ai_engine.py    # AI integration (Cerebras)
 ├── modules/            # Feature modules
 │   ├── dirbrute.py     # Directory brute-forcing
 │   ├── nuclei.py       # CVE scanning
@@ -374,4 +488,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 **ICARUS-X v2.0** - *Fly high, but not too close to the sun* ☀️
 
-Built with ❤️ using Python, asyncio, Typer, and Rich
+Built with ❤️ using Python, asyncio, Typer, Rich, and Cerebras AI
