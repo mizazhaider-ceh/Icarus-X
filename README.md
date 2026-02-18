@@ -16,10 +16,16 @@
 
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![Maintained](https://img.shields.io/badge/Maintained-Yes-brightgreen.svg?style=for-the-badge)](https://github.com/yourusername/Icarus-X)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20WSL2-lightgrey.svg?style=for-the-badge)](https://github.com/yourusername/Icarus-X)
+[![Maintained](https://img.shields.io/badge/Maintained-Yes-brightgreen.svg?style=for-the-badge)](https://github.com/mizazhaider-ceh/Icarus-X)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20WSL2-lightgrey.svg?style=for-the-badge)](https://github.com/mizazhaider-ceh/Icarus-X)
 
-[Features](#-features) • [Installation](#-quick-start) • [Usage](#-usage) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Screenshots](#-screenshots) • [Installation](#-quick-start) • [Usage](#-usage) • [AI Assistant](#-ai-assistant)
+
+---
+
+### 🎬 Demo
+
+![ICARUS-X Demo](screenshots/demo.gif)
 
 </div>
 
@@ -77,7 +83,7 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/Icarus-X.git
+git clone https://github.com/mizazhaider-ceh/Icarus-X.git
 cd Icarus-X
 
 # Install Python dependencies
@@ -122,7 +128,7 @@ python icarus.py dirbrute --target https://example.com
 python icarus.py dirbrute --target https://example.com --wordlist common.txt
 
 # Multiple extensions
-python icarus.py dirbrute --target https://example.com --extensions php,html,js
+python icarus.py dirbrute --target https://example.com --ext php,html,js
 ```
 
 #### 🔬 Vulnerability Scanning
@@ -201,19 +207,83 @@ python icarus.py runs show abc123
 
 ---
 
-## 📊 Screenshots
+## � Screenshots
 
-### Tool Status Check
+<details>
+<summary><b>🔧 Tool Status Check</b> - Verify all pentesting tools are installed</summary>
+
+<br>
+
+![Tool Status](screenshots/tools-check.png)
+
+```bash
+python icarus.py tools
 ```
-┏━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-┃ Tool        ┃ Status  ┃ Description              ┃ Version             ┃
-┡━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
-│ nmap        │   OK    │ Network scanner          │ Nmap version 7.94   │
-│ ffuf        │   OK    │ Fast web fuzzer          │ ffuf version 2.1.0  │
-│ nuclei      │   OK    │ Vulnerability scanner    │ v3.1.0              │
-└─────────────┴─────────┴──────────────────────────┴─────────────────────┘
-python3 icarus.py scout --target example.com --tech   # Include tech detection
-python3 icarus.py scout --targets targets.txt          # Mass target import
+
+</details>
+
+<details>
+<summary><b>🔍 Scout Reconnaissance</b> - High-speed async port scanning & enumeration</summary>
+
+<br>
+
+![Scout Scan](screenshots/scout-scan.png)
+
+```bash
+python icarus.py scout --target example.com
+```
+
+</details>
+
+<details>
+<summary><b>📁 Directory Brute-forcing</b> - Discover hidden files and directories</summary>
+
+<br>
+
+![DirBrute](screenshots/dirbrute.png)
+
+```bash
+python icarus.py dirbrute --target https://example.com --ext php,html
+```
+
+</details>
+
+<details>
+<summary><b>🤖 AI Assistant</b> - Get intelligent command suggestions (Powered by Cerebras)</summary>
+
+<br>
+
+![AI Assistant](screenshots/ai-assistant.png)
+
+```bash
+python icarus.py ai --commands --goal "enumerate SMB shares"
+```
+
+</details>
+
+<details>
+<summary><b>💉 Payload Generator</b> - Generate attack payloads for various scenarios</summary>
+
+<br>
+
+![Payloads](screenshots/payloads.png)
+
+```bash
+python icarus.py payloads --list shells
+```
+
+</details>
+
+> **📝 Adding Screenshots:** Create a `screenshots/` folder and add your terminal screenshots as PNG files.
+
+---
+
+## 🔍 Scout Mode
+
+```bash
+python icarus.py scout --target example.com
+python icarus.py scout --target example.com --tech   # Include tech detection
+python icarus.py scout --targets targets.txt          # Mass target import
 ```
 
 Features:

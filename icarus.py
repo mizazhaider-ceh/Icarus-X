@@ -98,7 +98,7 @@ app = typer.Typer(
   
   [cyan]# Directory brute-forcing[/cyan]
   python icarus.py dirbrute -t https://example.com
-  python icarus.py dirbrute -t https://example.com --extensions php,html
+  python icarus.py dirbrute -t https://example.com --ext php,html
   
   [cyan]# Vulnerability scanning with Nuclei[/cyan]
   python icarus.py vuln -t https://example.com
@@ -1261,7 +1261,7 @@ def main(
         
         console.print("\n[cyan]3. Directory Discovery:[/cyan]")
         console.print("   python icarus.py dirbrute -t https://example.com")
-        console.print("   python icarus.py dirbrute -t https://example.com --extensions php,html,js")
+        console.print("   python icarus.py dirbrute -t https://example.com --ext php,html,js")
         console.print("   python icarus.py wordlists --path common  [dim]# Find wordlist path[/dim]")
         
         console.print("\n[cyan]4. Vulnerability Assessment:[/cyan]")
