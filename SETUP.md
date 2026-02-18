@@ -29,7 +29,7 @@ ICARUS-X integrates with popular pentesting tools:
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/Icarus-X.git
+git clone https://github.com/mizazhaider-ceh/Icarus-X.git
 cd Icarus-X
 ```
 
@@ -237,9 +237,8 @@ max_concurrent_ports = 1000  # Increase for faster scans
 
 ## 🆘 Getting Help
 
-- **Documentation:** [GitHub Wiki](https://github.com/yourusername/Icarus-X/wiki)
-- **Issues:** [GitHub Issues](https://github.com/yourusername/Icarus-X/issues)
-- **Discord:** [Join our community](#)
+- **Documentation:** [GitHub Wiki](https://github.com/mizazhaider-ceh/Icarus-X/wiki)
+- **Issues:** [GitHub Issues](https://github.com/mizazhaider-ceh/Icarus-X/issues)
 
 ---
 

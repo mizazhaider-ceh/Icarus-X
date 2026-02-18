@@ -144,7 +144,7 @@ app = typer.Typer(
     """,
     add_completion=False,
     rich_markup_mode="rich",
-    epilog="[dim]ICARUS-X v2.0 - Ethical Hacking Only | GitHub: https://github.com/yourusername/Icarus-X[/dim]"
+    epilog="[dim]ICARUS-X v2.0 - Ethical Hacking Only | GitHub: https://github.com/mizazhaider-ceh/Icarus-X[/dim]"
 )
 console = Console(force_terminal=True)
 
@@ -1181,7 +1181,7 @@ def main(
     if version:
         console.print("[bold cyan]ICARUS-X[/bold cyan] v2.0.0")
         console.print("[dim]Unified AI-Powered Pentesting Framework[/dim]")
-        console.print("\n[yellow]GitHub:[/yellow] https://github.com/yourusername/Icarus-X")
+        console.print("\n[yellow]GitHub:[/yellow] https://github.com/mizazhaider-ceh/Icarus-X")
         raise typer.Exit()
     
     if ctx.invoked_subcommand is None:
@@ -1307,7 +1307,7 @@ def main(
         console.print("  [dim]• See LICENSE file for terms and conditions[/dim]")
         
         console.print("\n[bold]Need Help? Run [cyan]python icarus.py --help[/cyan] to see all commands[/bold]")
-        console.print("[bold]Or visit: [cyan]https://github.com/yourusername/Icarus-X[/cyan][/bold]\n")
+        console.print("[bold]Or visit: [cyan]https://github.com/mizazhaider-ceh/Icarus-X[/cyan][/bold]\n")
 
 
 if __name__ == "__main__":
