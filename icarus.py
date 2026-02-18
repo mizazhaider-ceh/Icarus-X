@@ -37,6 +37,10 @@ import os
 from pathlib import Path
 from typing import Optional
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()  # Load .env file if it exists
+
 # Fix Windows console encoding
 if sys.platform == "win32":
     os.environ.setdefault("PYTHONIOENCODING", "utf-8")
@@ -50,6 +54,9 @@ import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.markdown import Markdown
+from rich.syntax import Syntax
+from rich.text import Text
 from rich import print as rprint
 
 # Add parent to path for imports
@@ -65,9 +72,79 @@ from utils.config import load_config
 # Initialize Typer app with Rich
 app = typer.Typer(
     name="icarus-x",
-    help="ICARUS-X: Unified AI-Powered Pentesting Framework",
+    help="""[bold cyan]ICARUS-X[/bold cyan]: Unified AI-Powered Pentesting Framework
+    
+[bold]Fast, Async, Comprehensive Security Testing[/bold]
+
+[dim]One CLI to rule them all - 13+ security modules unified:[/dim]
+  • High-speed reconnaissance (500+ concurrent scans)
+  • Vulnerability detection with Nuclei
+  • Directory brute-forcing (ffuf/gobuster)
+  • Payload generation (XSS, SQLi, shells)
+  • AI-powered assistance (Cerebras AI - world's fastest)
+  • Professional HTML/JSON reports
+  • Mass target scanning (CIDR/ranges)
+
+[bold yellow]Quick Start Examples:[/bold yellow]
+  [cyan]# Check which tools are installed[/cyan]
+  python icarus.py tools
+  
+  [cyan]# Fast reconnaissance on a target[/cyan]
+  python icarus.py scout -t example.com
+  python icarus.py scout -t example.com --ports 80,443,8080 --tech
+  
+  [cyan]# Scan multiple targets from file[/cyan]
+  python icarus.py scout --targets targets.txt
+  
+  [cyan]# Directory brute-forcing[/cyan]
+  python icarus.py dirbrute -t https://example.com
+  python icarus.py dirbrute -t https://example.com --extensions php,html
+  
+  [cyan]# Vulnerability scanning with Nuclei[/cyan]
+  python icarus.py vuln -t https://example.com
+  python icarus.py vuln -t https://example.com --severity critical,high
+  
+  [cyan]# Generate attack payloads[/cyan]
+  python icarus.py payloads --list shells
+  python icarus.py payloads --type bash --ip 10.10.14.5 --port 4444
+  python icarus.py payloads --list xss
+  
+  [cyan]# AI-powered assistance (requires CEREBRAS_API_KEY)[/cyan]
+  python icarus.py ai --commands --goal "enumerate SMB shares"
+  python icarus.py ai --explain CVE-2024-1234
+  
+  [cyan]# Full pentest workflow[/cyan]
+  python icarus.py pentest -t example.com --workflow full
+  python icarus.py runs list
+  python icarus.py report --run-id abc123 --format html
+  
+  [cyan]# Browse wordlists[/cyan]
+  python icarus.py wordlists --scan
+  python icarus.py wordlists --path rockyou
+
+[bold magenta]Advanced Usage:[/bold magenta]
+  [cyan]# Network discovery with CIDR[/cyan]
+  python icarus.py netmap --range 192.168.1.0/24
+  
+  [cyan]# Technology fingerprinting[/cyan]
+  python icarus.py tech -t https://example.com
+  
+  [cyan]# Web crawling/spidering[/cyan]
+  python icarus.py spider -t https://example.com --depth 3
+  
+  [cyan]# Save output to file[/cyan]
+  python icarus.py scout -t example.com -o results.json --format json
+  
+[bold cyan]Documentation:[/bold cyan] 
+  • SETUP.md   - Installation guide
+  • README.md  - Full documentation
+  • PORTFOLIO.md - Project showcase
+  
+[bold green]Legal:[/bold green] ⚠️  Always obtain authorization before testing!
+    """,
     add_completion=False,
     rich_markup_mode="rich",
+    epilog="[dim]ICARUS-X v2.0 - Ethical Hacking Only | GitHub: https://github.com/yourusername/Icarus-X[/dim]"
 )
 console = Console(force_terminal=True)
 
@@ -896,24 +973,43 @@ def ai(
     explain: Optional[str] = typer.Option(None, "--explain", "-e", help="Explain a CVE or finding"),
     run_id: Optional[str] = typer.Option(None, "--run-id", help="Use context from a run"),
     goal: Optional[str] = typer.Option(None, "--goal", "-g", help="Goal for command suggestions"),
+    model: Optional[str] = typer.Option(None, "--model", "-m", help="AI model to use (llama3.1-8b, llama-3.3-70b, gpt-oss-120b)"),
 ):
     """
-    [bold magenta]AI Mode[/bold magenta] - AI-powered assistant
+    [bold magenta]AI Mode[/bold magenta] - AI-powered assistant (Cerebras - World's Fastest)
     
     Get intelligent help with:
     - Command suggestions for specific goals
     - CVE/vulnerability explanations
     - Finding analysis and remediation
     
-    [dim]Example: python icarus.py ai --commands --goal "initial foothold on Linux"[/dim]
+    Available models:
+    - llama3.1-8b (default) - Fast & efficient (~2200 tok/s)
+    - llama-3.3-70b - Better reasoning (~450 tok/s)
+    - gpt-oss-120b - Fastest production (~3000 tok/s)
+    
+    [dim]Example: python icarus.py ai --commands --goal "initial foothold on Linux" --model gpt-oss-120b[/dim]
     """
     show_banner()
-    console.print("\n[bold magenta]AI Mode[/bold magenta]\n")
+    console.print("\n[bold magenta]AI Mode[/bold magenta] - Powered by Cerebras (World's Fastest AI)\n")
     
     from utils.dashboard_integration import dashboard_log
     
     # Load config
     config = load_config()
+    
+    # Override model if specified
+    if model:
+        if model in config.ai.available_models:
+            config.ai.model = model
+            model_info = config.ai.available_models[model]
+            console.print(f"[dim]Using model: {model} ({model_info['params']}, {model_info['speed']})[/dim]\n")
+        else:
+            console.print(f"[red]Unknown model: {model}[/red]")
+            console.print("[yellow]Available models:[/yellow]")
+            for m, info in config.ai.available_models.items():
+                console.print(f"  • {m} ({info['params']}, {info['speed']})")
+            raise typer.Exit(1)
     
     # Initialize AI engine
     ai_engine = AIEngine(config)
@@ -934,19 +1030,37 @@ def ai(
                 context = manager.get_run_context(run_id)
             
             response = asyncio.run(ai_engine.suggest_commands(goal, context))
-            console.print(Panel(response, title="Suggested Commands", border_style="cyan"))
+            
+            # Render with clean formatting
+            console.print("\n" + "="*80)
+            console.print("[bold cyan]🎯 Suggested Commands[/bold cyan]")
+            console.print("="*80 + "\n")
+            console.print(Markdown(response))
+            console.print("\n" + "="*80 + "\n")
             
         elif explain:
             console.print(f"[dim]Explaining: {explain}[/dim]\n")
             dashboard_log("info", f"AI explaining: {explain}")
             response = asyncio.run(ai_engine.explain(explain))
-            console.print(Panel(response, title="Explanation", border_style="green"))
+            
+            # Render with clean formatting
+            console.print("\n" + "="*80)
+            console.print("[bold green]📖 Explanation[/bold green]")
+            console.print("="*80 + "\n")
+            console.print(Markdown(response))
+            console.print("\n" + "="*80 + "\n")
             
         elif query:
             console.print(f"[dim]Query: {query}[/dim]\n")
             dashboard_log("info", f"AI query: {query}")
             response = asyncio.run(ai_engine.ask(query))
-            console.print(Panel(response, title="AI Response", border_style="magenta"))
+            
+            # Render with clean formatting
+            console.print("\n" + "="*80)
+            console.print("[bold magenta]🤖 AI Response[/bold magenta]")
+            console.print("="*80 + "\n")
+            console.print(Markdown(response))
+            console.print("\n" + "="*80 + "\n")
             
         else:
             console.print("[yellow]Please provide --query, --commands, or --explain[/yellow]")
@@ -1066,12 +1180,134 @@ def main(
     """ICARUS-X: Unified AI-Powered Pentesting Framework"""
     if version:
         console.print("[bold cyan]ICARUS-X[/bold cyan] v2.0.0")
+        console.print("[dim]Unified AI-Powered Pentesting Framework[/dim]")
+        console.print("\n[yellow]GitHub:[/yellow] https://github.com/yourusername/Icarus-X")
         raise typer.Exit()
     
     if ctx.invoked_subcommand is None:
         show_banner()
-        console.print("\n[dim]Use --help for available commands[/dim]\n")
-        ctx.get_help()
+        
+        # Display comprehensive help
+        console.print("\n[bold green]🚀 Quick Start Guide[/bold green]\n")
+        
+        # Essential Commands Table
+        from rich.table import Table
+        table = Table(show_header=True, header_style="bold cyan", border_style="dim")
+        table.add_column("Command", style="yellow", width=12)
+        table.add_column("Example", style="white", width=50)
+        table.add_column("Description", style="dim", width=30)
+        
+        table.add_row(
+            "tools",
+            "python icarus.py tools",
+            "Check installed tools"
+        )
+        table.add_row(
+            "scout",
+            "python icarus.py scout -t example.com",
+            "Fast reconnaissance"
+        )
+        table.add_row(
+            "dirbrute",
+            "python icarus.py dirbrute -t https://target",
+            "Directory brute-force"
+        )
+        table.add_row(
+            "vuln",
+            "python icarus.py vuln -t https://target",
+            "Vulnerability scan (Nuclei)"
+        )
+        table.add_row(
+            "spider",
+            "python icarus.py spider -t https://target",
+            "Web crawler"
+        )
+        table.add_row(
+            "payloads",
+            "python icarus.py payloads --list shells",
+            "Generate attack payloads"
+        )
+        table.add_row(
+            "ai",
+            "python icarus.py ai --query 'explain nmap'",
+            "AI assistant (requires API key)"
+        )
+        table.add_row(
+            "pentest",
+            "python icarus.py pentest -t example.com",
+            "Full workflow"
+        )
+        
+        console.print(table)
+        
+        # Additional helpful info
+        console.print("\n[bold cyan]📚 More Commands:[/bold cyan]")
+        console.print("  • [yellow]wordlists[/yellow] - Browse wordlist collections")
+        console.print("  • [yellow]tech[/yellow]      - Technology detection")
+        console.print("  • [yellow]netmap[/yellow]    - Network discovery")
+        console.print("  • [yellow]report[/yellow]    - Generate reports")
+        console.print("  • [yellow]runs[/yellow]      - Manage workflow runs")
+        
+        # Common Usage Patterns
+        console.print("\n[bold magenta]🎯 Common Usage Patterns:[/bold magenta]")
+        console.print("\n[cyan]1. Basic Reconnaissance:[/cyan]")
+        console.print("   python icarus.py scout -t example.com")
+        console.print("   python icarus.py scout -t example.com --ports 80,443,8080")
+        console.print("   python icarus.py scout -t example.com --tech")
+        
+        console.print("\n[cyan]2. Mass Target Scanning:[/cyan]")
+        console.print("   python icarus.py scout --targets targets.txt")
+        console.print("   [dim]# targets.txt format: one target per line, supports IPs, domains, CIDR[/dim]")
+        
+        console.print("\n[cyan]3. Directory Discovery:[/cyan]")
+        console.print("   python icarus.py dirbrute -t https://example.com")
+        console.print("   python icarus.py dirbrute -t https://example.com --extensions php,html,js")
+        console.print("   python icarus.py wordlists --path common  [dim]# Find wordlist path[/dim]")
+        
+        console.print("\n[cyan]4. Vulnerability Assessment:[/cyan]")
+        console.print("   python icarus.py vuln -t https://example.com")
+        console.print("   python icarus.py vuln -t https://example.com --severity critical,high")
+        console.print("   python icarus.py tech -t https://example.com  [dim]# Detect tech stack first[/dim]")
+        
+        console.print("\n[cyan]5. Payload Generation:[/cyan]")
+        console.print("   python icarus.py payloads --list shells")
+        console.print("   python icarus.py payloads --type bash --ip 10.10.14.5 --port 4444")
+        console.print("   python icarus.py payloads --list xss")
+        console.print("   python icarus.py payloads --list sqli")
+        
+        console.print("\n[cyan]6. AI-Assisted Hacking (requires API key):[/cyan]")
+        console.print("   python icarus.py ai --commands --goal 'enumerate SMB shares'")
+        console.print("   python icarus.py ai --explain CVE-2024-1234")
+        console.print("   python icarus.py ai --query 'how to bypass WAF?'")
+        
+        console.print("\n[cyan]7. Full Penetration Testing Workflow:[/cyan]")
+        console.print("   python icarus.py pentest -t example.com --workflow quick")
+        console.print("   python icarus.py pentest -t example.com --workflow full")
+        console.print("   python icarus.py runs list  [dim]# View previous scans[/dim]")
+        console.print("   python icarus.py report --run-id abc123 --format html")
+        
+        console.print("\n[bold yellow]💡 Pro Tips:[/bold yellow]")
+        console.print("  • Run [cyan]<command> --help[/cyan] for all options (e.g., scout --help)")
+        console.print("  • Use [cyan]--verbose[/cyan] or [cyan]-v[/cyan] flag for detailed output")
+        console.print("  • Check [cyan]python icarus.py wordlists --scan[/cyan] to see all wordlists")
+        console.print("  • Use [cyan]--output[/cyan] or [cyan]-o[/cyan] to save results to file")
+        console.print("  • Mass scanning: supports CIDR (192.168.1.0/24) and ranges (192.168.1.1-50)")
+        console.print("  • Install SecLists: [cyan]git clone https://github.com/danielmiessler/SecLists[/cyan]")
+        
+        console.print("\n[bold green]📖 Documentation:[/bold green]")
+        console.print("  • [cyan]SETUP.md[/cyan]    - Complete installation guide")
+        console.print("  • [cyan]README.md[/cyan]   - Full documentation with examples")
+        console.print("  • [cyan]PORTFOLIO.md[/cyan] - Project showcase materials")
+        console.print("  • [cyan].env.example[/cyan] - API key configuration template")
+        
+        console.print("\n[bold red]⚠️  Legal Warning:[/bold red]")
+        console.print("  [dim]• Always obtain written authorization before testing any target[/dim]")
+        console.print("  [dim]• Unauthorized access is illegal and punishable by law[/dim]")
+        console.print("  [dim]• This tool is for authorized security testing ONLY[/dim]")
+        console.print("  [dim]• See LICENSE file for terms and conditions[/dim]")
+        
+        console.print("\n[bold]Need Help? Run [cyan]python icarus.py --help[/cyan] to see all commands[/bold]")
+        console.print("[bold]Or visit: [cyan]https://github.com/yourusername/Icarus-X[/cyan][/bold]\n")
 
 
 if __name__ == "__main__":

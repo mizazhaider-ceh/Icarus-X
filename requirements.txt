@@ -27,8 +27,12 @@ orjson>=3.9.0
 # WHOIS Lookups
 python-whois>=0.9.0
 
+# Environment Variables
+python-dotenv>=1.0.0
+
 # AI Integration (Optional - for 'ai' command)
-google-generativeai>=0.3.0
+# Cerebras AI - World's fastest AI inference
+cerebras-cloud-sdk>=1.0.0
 
 # Optional: Web Technology Detection
 # python-Wappalyzer>=0.3.0

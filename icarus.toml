@@ -31,13 +31,25 @@ default_workflow = "full"
 enabled_phases = ["recon", "vuln_scan", "report"]
 
 [ai]
-# AI provider: "gemini", "anthropic", "openai"
-provider = "gemini"
-model = "gemini-1.5-flash"
+# AI provider: "cerebras" (world's fastest AI inference)
+provider = "cerebras"
+
+# Available models:
+# - llama3.1-8b (8B, ~2200 tok/s) - Fast & efficient
+# - llama-3.3-70b (70B, ~450 tok/s) - Balanced
+# - gpt-oss-120b (120B, ~3000 tok/s) - Production
+# - qwen-3-235b-a22b-instruct-2507 (235B, ~1400 tok/s) - Preview
+# - zai-glm-4.7 (355B, ~1000 tok/s) - Preview
+model = "llama3.1-8b"
+
+# Alternative models for different use cases
+# model = "llama-3.3-70b"  # Better reasoning
+# model = "gpt-oss-120b"   # Fastest production model
+
 max_tokens = 4096
 temperature = 0.7
 
-# API key (set via environment variable ICARUS_AI_API_KEY)
+# API key (set via environment variable ICARUS_AI_API_KEY or CEREBRAS_API_KEY)
 api_key_env = "ICARUS_AI_API_KEY"
 
 [reporting]

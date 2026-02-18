@@ -36,7 +36,8 @@ ENV/
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/.gitkeep
 
 # Database
 *.db
@@ -48,6 +49,10 @@ data/
 reports/
 *.html
 !templates/*.html
+
+# Artifacts
+artifacts/*
+!artifacts/.gitkeep
 
 # OS files
 .DS_Store
