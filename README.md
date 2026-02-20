@@ -353,3 +353,10 @@ MIT License - See [LICENSE](LICENSE) for details.
 [⬆ Back to Top](#-icarus-x)
 
 </div>
+
+<div align="center">
+
+
+![Visitors](https://api.visitorbadge.io/api/visitors?path=mizazhaider-ceh%2FX-Recon&label=Visitors&countColor=%2300f3ff)
+
+</div>
