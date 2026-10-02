@@ -141,17 +141,42 @@ class ReconEngine:
         return result
     
     def _parse_ports(self, ports: str) -> list[int]:
-        """Parse port specification into list of ports."""
-        if ports == "top-1000":
-            return TOP_1000_PORTS[:200]  # Limited for speed
-        elif ports == "full":
+        """
+        Parse port specification into a list of ports.
+
+        Accepts: "top-1000" (bundled top-ports list), "full" (1-65535),
+        "top-N" (first N of the bundled list), or comma-separated like "22,80,443".
+        Raises ValueError on invalid input.
+        """
+        spec = (ports or "").strip().lower()
+        if not spec:
+            raise ValueError("empty port specification")
+        if spec == "top-1000":
+            return list(TOP_1000_PORTS)
+        if spec == "full":
             return list(range(1, 65536))
-        elif ports.startswith("top-"):
-            count = int(ports.split("-")[1])
+        if spec.startswith("top-"):
+            try:
+                count = int(spec.split("-", 1)[1])
+            except ValueError:
+                raise ValueError(f"invalid port spec: {ports!r}")
+            if count <= 0:
+                raise ValueError(f"invalid port count in spec: {ports!r}")
             return TOP_1000_PORTS[:count]
-        else:
-            # Comma-separated list
-            return [int(p.strip()) for p in ports.split(",")]
+        # Comma-separated list
+        parsed = []
+        for token in spec.split(","):
+            token = token.strip()
+            try:
+                port = int(token)
+            except ValueError:
+                raise ValueError(f"invalid port: {token!r}")
+            if not 1 <= port <= 65535:
+                raise ValueError(f"port out of range (1-65535): {token!r}")
+            parsed.append(port)
+        if not parsed:
+            raise ValueError(f"invalid port spec: {ports!r}")
+        return sorted(set(parsed))
     
     async def _scan_ports(
         self, 
@@ -224,7 +249,7 @@ class ReconEngine:
                 full_domain = f"{subdomain}.{domain}"
                 try:
                     # Use socket.getaddrinfo in thread (more reliable than aiodns on Windows)
-                    loop = asyncio.get_event_loop()
+                    loop = asyncio.get_running_loop()
                     addrs = await loop.run_in_executor(
                         None,
                         lambda: socket.getaddrinfo(full_domain, None, socket.AF_INET)

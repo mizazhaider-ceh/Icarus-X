@@ -260,7 +260,9 @@ def generate_reverse_shell(shell_type: str, ip: str, port: int, encoder: str = N
         return f"Unknown shell type: {shell_type}"
     
     shell = REVERSE_SHELLS[shell_type]
-    payload = shell["payload"].format(ip=ip, port=port)
+    # Use plain replacement instead of str.format(): several payload templates
+    # contain literal braces (perl, powershell, awk) which .format() chokes on.
+    payload = shell["payload"].replace("{ip}", ip).replace("{port}", str(port))
     
     # Apply encoding if specified
     if encoder and encoder in ENCODERS:

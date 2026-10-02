@@ -25,7 +25,7 @@
 
 <br>
 
-<img src="screenshots/demo.gif" alt="ICARUS-X Demo" width="700">
+<img src="screenshots/scout-scan.png" alt="ICARUS-X scout scan" width="700">
 
 </div>
 
@@ -357,6 +357,6 @@ MIT License - See [LICENSE](LICENSE) for details.
 <div align="center">
 
 
-![Visitors](https://api.visitorbadge.io/api/visitors?path=mizazhaider-ceh%2FX-Recon&label=Visitors&countColor=%2300f3ff)
+![Visitors](https://api.visitorbadge.io/api/visitors?path=mizazhaider-ceh%2FIcarus-X&label=Visitors&countColor=%2300f3ff)
 
 </div>

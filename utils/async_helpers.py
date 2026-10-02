@@ -28,7 +28,7 @@ async def run_in_thread(func: Callable[..., T], *args, **kwargs) -> T:
     Returns:
         Function result
     """
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(
         _thread_pool,
         lambda: func(*args, **kwargs)

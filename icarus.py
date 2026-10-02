@@ -406,6 +406,25 @@ def _display_recon_results(results, format: str, output: Optional[str]):
             console.print(f"[dim]Results saved to {output}[/dim]")
         else:
             console.print(json_output)
+    elif format == "csv":
+        import csv
+        import io
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        writer.writerow(["type", "target", "detail", "extra"])
+        target = results.target.identifier
+        for port_info in results.open_ports:
+            writer.writerow(["port", target, port_info.port, port_info.service or ""])
+        for sub in results.subdomains:
+            writer.writerow(["subdomain", target, sub.name, ",".join(sub.resolved_ips)])
+        for svc in results.http_services:
+            writer.writerow(["http", target, svc.url, f"{svc.status_code} {svc.title or ''}".strip()])
+        csv_output = buf.getvalue()
+        if output:
+            Path(output).write_text(csv_output)
+            console.print(f"[dim]Results saved to {output}[/dim]")
+        else:
+            console.print(csv_output)
     else:
         # Rich table display
         # Port scan results
@@ -929,6 +948,9 @@ def pentest(
         # Create or resume run
         if run_id:
             run = manager.resume_run(run_id)
+            if not run:
+                console.print(f"[red]No run found with ID: {run_id}[/red]")
+                raise typer.Exit(1)
             console.print(f"[dim]Resuming run: {run_id}[/dim]")
         else:
             run = asyncio.run(manager.create_run(target, workflow))

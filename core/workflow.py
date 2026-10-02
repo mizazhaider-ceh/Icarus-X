@@ -213,13 +213,46 @@ class WorkflowManager:
     
     async def _run_vuln_phase(self, run: WorkflowRun):
         """Execute vulnerability scanning phase."""
-        # For now, generate basic findings based on open ports/services
-        console.print("[dim]Running basic vulnerability checks...[/dim]")
-        
-        # TODO: Integrate with Nuclei, Nmap scripts, etc.
-        await asyncio.sleep(1)  # Placeholder
-        
-        console.print("[dim]Vulnerability scanning complete (basic checks only)[/dim]")
+        from modules.vuln_scan import check_security_headers
+
+        # Load HTTP services discovered during recon
+        http_services = []
+        recon_json = self._get_phase_result(run.id, "recon")
+        if recon_json:
+            try:
+                results = ReconResult.model_validate(orjson.loads(recon_json))
+                http_services = [s.url for s in results.http_services]
+            except Exception as e:
+                self.logger.warning(f"Could not parse recon results: {e}")
+
+        if not http_services:
+            console.print("[dim]No HTTP services discovered; skipping web checks.[/dim]")
+            return
+
+        console.print(f"[dim]Checking security headers on {len(http_services)} service(s)...[/dim]")
+        new_findings = 0
+        for url in http_services[:20]:  # cap to keep the phase fast
+            try:
+                for finding in await check_security_headers(url):
+                    self._store_finding(run.id, finding)
+                    new_findings += 1
+                    console.print(f"[yellow][!] {finding.title} on {url}[/yellow]")
+            except Exception as e:
+                self.logger.warning(f"Header check failed for {url}: {e}")
+
+        run.finding_count += new_findings
+        console.print(f"[dim]Vulnerability checks complete: {new_findings} finding(s).[/dim]")
+
+    def _get_phase_result(self, run_id: str, phase_name: str) -> Optional[str]:
+        """Load a phase's stored result JSON."""
+        with Session(self.engine) as session:
+            phase = session.exec(
+                select(PhaseDB).where(
+                    PhaseDB.run_id == run_id,
+                    PhaseDB.name == phase_name,
+                )
+            ).first()
+            return phase.result_json if phase else None
     
     async def _run_exploit_phase(self, run: WorkflowRun):
         """Execute exploitation phase (placeholder)."""

@@ -55,29 +55,43 @@ def parse_range(range_str: str) -> list[str]:
         if len(parts) == 2:
             start = parts[0].strip()
             end = parts[1].strip()
-            
+
             try:
                 if "." in end:
                     # Full IP range: 192.168.1.1-192.168.1.50
                     start_ip = ipaddress.ip_address(start)
                     end_ip = ipaddress.ip_address(end)
-                    
+                    if start_ip > end_ip:
+                        console.print(f"[red]Invalid range (reversed): {range_str}[/red]")
+                        return []
+
                     current = start_ip
                     while current <= end_ip:
                         ips.append(str(current))
                         current = ipaddress.ip_address(int(current) + 1)
+                        if len(ips) > 65536:
+                            console.print(f"[yellow]Range too large, truncating at 65536 hosts[/yellow]")
+                            break
                 else:
                     # Last octet range: 192.168.1.1-50
-                    base = ".".join(start.split(".")[:-1])
-                    start_octet = int(start.split(".")[-1])
+                    octets = start.split(".")
+                    if len(octets) != 4:
+                        raise ValueError(f"not an IPv4 address: {start}")
+                    base = ".".join(octets[:-1])
+                    start_octet = int(octets[-1])
                     end_octet = int(end)
-                    
+                    if not (0 <= start_octet <= 255 and 0 <= end_octet <= 255):
+                        raise ValueError("octet out of range 0-255")
+                    if start_octet > end_octet:
+                        console.print(f"[red]Invalid range (reversed): {range_str}[/red]")
+                        return []
+
                     for i in range(start_octet, end_octet + 1):
                         ips.append(f"{base}.{i}")
-            
+
             except ValueError as e:
                 console.print(f"[red]Invalid range: {range_str} - {e}[/red]")
-    
+
     return ips
 
 

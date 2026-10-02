@@ -102,7 +102,13 @@ async def run_ffuf(
 ) -> list[DirBruteResult]:
     """Run ffuf for directory brute-forcing."""
     results = []
-    
+
+    # Unique temp file per run so concurrent scans don't clobber each other
+    import tempfile
+    _tmp = tempfile.NamedTemporaryFile(prefix="icarus_ffuf_", suffix=".json", delete=False)
+    _tmp.close()
+    output_file = Path(_tmp.name)
+
     # Build command
     cmd = [
         "ffuf",
@@ -110,7 +116,7 @@ async def run_ffuf(
         "-w", wordlist,
         "-t", str(threads),
         "-timeout", "10",
-        "-o", "/tmp/ffuf_output.json",
+        "-o", str(output_file),
         "-of", "json",
         "-mc", "200,201,202,203,204,301,302,307,308,401,403,405,500",
     ]
@@ -134,7 +140,6 @@ async def run_ffuf(
         )
         
         # Parse JSON output
-        output_file = Path("/tmp/ffuf_output.json")
         if output_file.exists():
             import json
             with open(output_file) as f:
@@ -149,12 +154,14 @@ async def run_ffuf(
                     redirect=result.get("redirectlocation"),
                 ))
             
-            output_file.unlink()  # Cleanup
+            output_file.unlink(missing_ok=True)  # Cleanup
     
     except asyncio.TimeoutError:
         console.print("[yellow]ffuf timed out[/yellow]")
+        output_file.unlink(missing_ok=True)
     except Exception as e:
         console.print(f"[red]ffuf error: {e}[/red]")
+        output_file.unlink(missing_ok=True)
     
     return results
 

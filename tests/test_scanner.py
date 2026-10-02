@@ -26,9 +26,9 @@ class TestReconEngine:
         return ReconEngine(config)
     
     def test_parse_ports_top_1000(self, engine):
-        """Test top-1000 port parsing."""
+        """Test top-1000 port parsing returns the full bundled list."""
         ports = engine._parse_ports("top-1000")
-        assert len(ports) == 200  # Limited for speed
+        assert ports == TOP_1000_PORTS
         assert 80 in ports
         assert 443 in ports
     
@@ -40,7 +40,17 @@ class TestReconEngine:
     def test_parse_ports_top_n(self, engine):
         """Test top-N port parsing."""
         ports = engine._parse_ports("top-10")
-        assert len(ports) == 10
+        assert ports == TOP_1000_PORTS[:10]
+
+    def test_parse_ports_invalid(self, engine):
+        """Test invalid port specs raise ValueError."""
+        for bad in ["", "abc", "0", "99999", "80-abc", "top-0", "top-abc", "22,foo"]:
+            with pytest.raises(ValueError):
+                engine._parse_ports(bad)
+
+    def test_parse_ports_dedup_sorted(self, engine):
+        """Custom lists are deduplicated and sorted."""
+        assert engine._parse_ports("443,22,22,80") == [22, 80, 443]
     
     def test_service_signatures(self):
         """Test service signature mapping."""
